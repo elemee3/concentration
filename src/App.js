@@ -11,8 +11,10 @@ class App extends Component {
     super(props);
     this.state = {
       deck: [],
+      matchIndexes: [],
       currentPairIndexes: [],
-      matchIndexes: []
+      message: "Press 'New Game' to Play!",
+      activeGame: false
     };
   }
 
@@ -24,39 +26,44 @@ class App extends Component {
         this.setState({
           deck: parsed.cards,
           currentPairIndexes: [],
-          matchIndexes: []
+          matchIndexes: [],
+          message: "",
+          activeGame: true
         })
       )
       .catch(err => console.log(err));
   }
 
+
   handleClick = (index) => {
-    let { deck, currentPairIndexes, matchIndexes } = this.state;
-    if (currentPairIndexes.length === 0) {
-      // if it's the first, add it to currentPairIndexes
+    let { currentPairIndexes, matchIndexes } = this.state;
+    // take action only if: 1) card is still in play; 2) card is not already clicked; 3) there are 0 or 1 cards selected
+    if (!matchIndexes.includes(index) && !currentPairIndexes.includes(index) && currentPairIndexes.length < 2) {
       currentPairIndexes.push(index);
       this.setState({ currentPairIndexes });
-    } else if (currentPairIndexes.length === 2) {
-      // ensure no more than 2 cards can be selected at a time
-      currentPairIndexes = [];
-      currentPairIndexes.push(index);
-      this.setState({ currentPairIndexes });
-    } else {
-      // if it's the second, check for a match
-      if (deck[index].value === deck[currentPairIndexes[0]].value && index !== currentPairIndexes[0]) {
-        // if it's a match, add both indexes to matchIndexes
-        matchIndexes.push(currentPairIndexes[0]);
-        matchIndexes.push(index);
-        this.setState({
-          matchIndexes,
-          currentPairIndexes: [],
-        });
-      } else {
-        // if it's not a match, push second to currentPairIndexes
-        currentPairIndexes.push(index);
-        this.setState({ currentPairIndexes });
-      };
     };
+  }
+
+  checkMatch = () => {
+    let { deck, currentPairIndexes } = this.state;
+    if (deck[currentPairIndexes[0]].value === deck[currentPairIndexes[1]].value) {
+      this.removeMatch();
+    } else {
+      this.flipCards();
+    };
+  }
+
+  // If 2 matching cards have been selected, remove from board after 3/4 second
+  removeMatch = () => {
+    let { currentPairIndexes, matchIndexes } = this.state;
+    setTimeout(function() {
+      matchIndexes.push(currentPairIndexes[0]);
+      matchIndexes.push(currentPairIndexes[1]);
+      this.setState({
+        matchIndexes,
+        currentPairIndexes: [],
+      });
+    }.bind(this), 750);
   }
 
   // If 2 non-matching cards have been selected, flip both back over after 3/4 second
@@ -66,8 +73,18 @@ class App extends Component {
     }.bind(this), 750);
   }
 
+  checkGameOver = () => {
+    if (this.state.matchIndexes.length === 52 && this.state.activeGame) {
+      this.setState({
+        activeGame: false,
+        message: "You win! Press 'New Game' to Play Again"
+      });
+    };
+  }
+
   render() {
-    // generate cards based on
+    this.checkGameOver();
+    // generate cards based on state
     let cards = this.state.deck.map((card, id) => {
       let imageSrc;
       if (this.state.matchIndexes.includes(id)) {
@@ -89,14 +106,14 @@ class App extends Component {
     })
     return (
       <div style={appStyles}>
-        <Header getShuffled={this.newGame} />
+        <Header getShuffled={this.newGame} message={this.state.message} />
         <div style={boardStyles}>
           {cards}
           {
-            // handle non-matching pair
+            // if 2 cards are selected, check for match
             this.state.currentPairIndexes.length === 2
             ?
-            this.flipCards()
+            this.checkMatch()
             :
             null
           }
@@ -123,8 +140,4 @@ const boardStyles = {
   margin: '0 auto',
 }
 
-// TODO: In case of match, first flip over second card then remove both
 // TODO: Make cards display dynamically based on screen size
-
-// STRETCH: 'Hard mode' to match both color and number
-// STRETCH: Allow user to choose different card colors

@@ -16,3 +16,4 @@ Open [http://localhost:3000](http://localhost:3000) to view in the browser.
 
 ### Image Credit
 Back of playing card image taken from https://opengameart.org/content/colorful-poker-card-back
+Spade icon taken from https://www.favicon.cc/?action=icon&file_id=202420

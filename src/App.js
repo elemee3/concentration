@@ -132,12 +132,12 @@ const appStyles = {
 };
 
 const boardStyles = {
-  width: '1150px',
+  minWidth: '1150px',
+  width: '85vw',
+  height: '75vh',
   display: 'flex',
   flexWrap: 'wrap',
   flexDirection: 'row',
   justifyContent: 'space-between',
   margin: '0 auto',
 }
-
-// TODO: Make cards display dynamically based on screen size

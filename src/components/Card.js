@@ -21,7 +21,8 @@ class Card extends Component {
 export default Card;
 
 const cardStyles = {
-  maxWidth: '75px',
+  minWidth: '75px',
+  width: '5.7vw',
   height: 'auto',
   margin: '5px',
   userSelect: 'none'  // disables blue highlight

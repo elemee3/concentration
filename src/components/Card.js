@@ -8,7 +8,11 @@ class Card extends Component {
   render() {
     return (
       <div onClick={this.handleClick}>
-        <img style={cardStyles} src={this.props.image} alt={this.props.value} />
+        <img
+          style={cardStyles}
+          src={this.props.image}
+          alt={this.props.value}
+        />
       </div>
     );
   }
